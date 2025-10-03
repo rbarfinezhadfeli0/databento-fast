@@ -45,7 +45,7 @@ pip install databento-fast[databento]
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/databento-fast.git
+git clone https://github.com/rbarfinezhadfeli0/databento-fast.git
 cd databento-fast
 
 # Build C++ library
@@ -789,7 +789,7 @@ git add .
 git commit -m "Initial commit: databento-fast v1.0.0"
 
 # Push to GitHub
-git remote add origin https://github.com/YOUR_USERNAME/databento-fast.git
+git remote add origin https://github.com/rbarfinezhadfeli0/databento-fast.git
 git branch -M main
 git push -u origin main
 ```
