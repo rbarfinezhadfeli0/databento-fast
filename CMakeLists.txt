@@ -23,6 +23,9 @@ target_include_directories(databento_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# Enable position independent code for static library (needed for Python bindings)
+set_target_properties(databento_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 # Python bindings (optional)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
 

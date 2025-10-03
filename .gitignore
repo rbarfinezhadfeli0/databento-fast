@@ -77,4 +77,7 @@ CTestTestfile.cmake
 # Temporary files
 /tmp/
 *.tmp
+
+# Exclude DBN files except in examples
 *.dbn
+!examples/*.dbn
