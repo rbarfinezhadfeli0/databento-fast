@@ -1,41 +1,90 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Build directories
+build/
+cmake-build-*/
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
+*.a
 *.so
+*.so.*
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
 *.lib
+*.exp
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+CTestTestfile.cmake
+Testing/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Testing
+*.dbn
+*.dbn.zst
+/tmp/
+test_output/
+*.log
 
 # Executables
+simple_mbo_parsing
+ultra_fast_parsing
+batch_processing
+benchmark_all
+test_parser
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Compiler outputs
 *.exe
 *.out
 *.app
 
-# debug information files
-*.dwo
+# Backup files
+*.bak
+*.backup
+*~

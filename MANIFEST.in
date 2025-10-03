@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include include *.hpp
+recursive-include src *.cpp
+recursive-include python *.cpp *.py
+include CMakeLists.txt
+
