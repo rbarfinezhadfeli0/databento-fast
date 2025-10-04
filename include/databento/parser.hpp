@@ -26,6 +26,9 @@ public:
 
   // Load file into memory (required before parsing)
   void load_into_memory();
+  
+  // Load file using memory mapping (FASTEST - almost instant!)
+  void load_with_mmap();
 
   // Parse entire file with callback
   void parse_mbo(MboCallback callback);
@@ -52,6 +55,11 @@ private:
   size_t record_size_;
   size_t num_records_;
   std::vector<uint8_t> buffer_;
+  void* mmap_addr_;
+  int mmap_fd_;
+  bool using_mmap_;
+  
+  void cleanup_mmap();
 };
 
 // ============================================================================

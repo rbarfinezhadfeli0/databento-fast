@@ -4,6 +4,10 @@
 #include <chrono>
 #include <stdexcept>
 #include <cstring>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 namespace databento {
 
@@ -17,11 +21,29 @@ DbnParser::DbnParser(const std::string& filepath)
       size_(0),
       metadata_offset_(200),  // Standard DBN metadata size
       record_size_(48),       // MBO/Trade record size
-      num_records_(0) {
+      num_records_(0),
+      mmap_addr_(nullptr),
+      mmap_fd_(-1),
+      using_mmap_(false) {
 }
 
 DbnParser::~DbnParser() {
+  cleanup_mmap();
   // buffer_ automatically cleans up
+}
+
+void DbnParser::cleanup_mmap() {
+  if (using_mmap_ && mmap_addr_ != nullptr && mmap_addr_ != MAP_FAILED) {
+    munmap(mmap_addr_, size_);
+    mmap_addr_ = nullptr;
+  }
+  
+  if (mmap_fd_ >= 0) {
+    close(mmap_fd_);
+    mmap_fd_ = -1;
+  }
+  
+  using_mmap_ = false;
 }
 
 void DbnParser::load_into_memory() {
@@ -43,7 +65,49 @@ void DbnParser::load_into_memory() {
   file.close();
 
   data_ = buffer_.data();
+  using_mmap_ = false;
 
+  // Calculate number of records
+  if (size_ > metadata_offset_) {
+    const size_t data_size = size_ - metadata_offset_;
+    num_records_ = data_size / record_size_;
+  }
+}
+
+void DbnParser::load_with_mmap() {
+  // Clean up any existing mapping
+  cleanup_mmap();
+  
+  // Open file
+  mmap_fd_ = open(filepath_.c_str(), O_RDONLY);
+  if (mmap_fd_ < 0) {
+    throw std::runtime_error("Failed to open file for mmap: " + filepath_);
+  }
+  
+  // Get file size
+  struct stat sb;
+  if (fstat(mmap_fd_, &sb) < 0) {
+    close(mmap_fd_);
+    mmap_fd_ = -1;
+    throw std::runtime_error("Failed to get file size: " + filepath_);
+  }
+  
+  size_ = sb.st_size;
+  
+  // Memory map the file
+  mmap_addr_ = mmap(nullptr, size_, PROT_READ, MAP_PRIVATE, mmap_fd_, 0);
+  if (mmap_addr_ == MAP_FAILED) {
+    close(mmap_fd_);
+    mmap_fd_ = -1;
+    throw std::runtime_error("Failed to mmap file: " + filepath_);
+  }
+  
+  // Advise kernel about access pattern
+  madvise(mmap_addr_, size_, MADV_SEQUENTIAL | MADV_WILLNEED);
+  
+  data_ = static_cast<const uint8_t*>(mmap_addr_);
+  using_mmap_ = true;
+  
   // Calculate number of records
   if (size_ > metadata_offset_) {
     const size_t data_size = size_ - metadata_offset_;

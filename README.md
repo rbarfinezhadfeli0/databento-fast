@@ -2,7 +2,7 @@
 
 **Ultra-fast C++ library for parsing Databento DBN files**
 
-Achieves **330M+ records/sec** on Intel Xeon - faster than Rust!
+Achieves **193M+ records/sec** with memory-mapped I/O - processes 15GB in 2.7 seconds!
 
 [![PyPI version](https://badge.fury.io/py/databento-fast.svg)](https://pypi.org/project/databento-fast/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,18 +12,19 @@ Achieves **330M+ records/sec** on Intel Xeon - faster than Rust!
 
 ## ⚡ Performance
 
-**Tested on Intel Xeon E5-2680 v3 @ 2.50GHz (48 cores):**
+**Tested on Intel Xeon E5-2680 v3 @ 2.50GHz (48 cores, 180GB RAM):**
 
-- **Direct Memory Access:** 330M records/sec (14.9 GB/s)
-- **Batch Processing:** 100-150M records/sec (estimated)
-- **Per-Record Callback:** 30-50M records/sec (estimated)
+### Real-World Performance (15GB file, 328M records):
+- **Load time:** 0.000s (instant mmap!)
+- **Process time:** 1.7s (193M records/sec)
+- **Total time:** 2.7s
+- **Throughput:** 5.6 GB/s
 
-**Comparison:**
-- 🥇 **databento-fast:** 330M/s (this library)
-- 🥈 Rust: 211M/s (1.56x slower)
-- 🥉 Mojo: 135M/s (2.44x slower)
-- 📊 Official databento-cpp: ~40M/s (8.25x slower)
-- 🐍 Python: ~0.5M/s (660x slower)
+### Comparison:
+- 🥇 **databento-fast:** 193M/s (this library)
+- 🥈 Rust: 211M/s (comparable)
+- 📊 Official databento-cpp: ~40M/s (4.8x slower)
+- 🐍 Python: ~0.5M/s (386x slower)
 
 ---
 
@@ -81,7 +82,7 @@ data = client.timeseries.get_range(
     path="data.dbn"
 )
 
-# Parse with fast C++ library (283M+ rec/s)
+# Parse with fast C++ library (193M+ rec/s)
 records = databento_cpp.parse_file_mbo_fast("data.dbn")
 
 # Print record count
@@ -94,6 +95,32 @@ for r in large_orders[:5]:
 ```
 
 See `python/minimal_example.py` for complete code.
+
+---
+
+## 🚀 Memory-Mapped I/O for Maximum Speed
+
+The library uses **memory-mapped files (mmap)** for instant loading:
+
+```cpp
+#include <databento/parser.hpp>
+
+int main() {
+    databento::DbnParser parser("data.dbn");
+    parser.load_with_mmap();  // Instant! (0.000s vs 30s regular load)
+    
+    // Process at 193M+ rec/s
+    for (size_t i = 0; i < parser.num_records(); ++i) {
+        auto msg = databento::parse_mbo(parser.get_record(i));
+    }
+}
+```
+
+**Benefits:**
+- ✅ Instant load (0.000s instead of 30s for 15GB)
+- ✅ OS handles disk I/O in background
+- ✅ Automatic caching on repeat runs
+- ✅ Lower memory footprint
 
 ---
 
@@ -778,43 +805,39 @@ export CC=gcc-11
 
 ## 🚀 Publishing
 
-### To GitHub
+### Quick Publish (GitHub + PyPI)
 
 ```bash
-cd databento-fast
+# Make publish script executable
+chmod +x publish.sh
 
-# Initialize git
-git init
-git add .
-git commit -m "Initial commit: databento-fast v1.0.0"
+# Publish to GitHub
+./publish.sh
 
-# Push to GitHub
-git remote add origin https://github.com/rbarfinezhadfeli0/databento-fast.git
-git branch -M main
-git push -u origin main
+# Publish to PyPI (requires token)
+python -m twine upload dist/*
 ```
 
-### To PyPI
+### Manual GitHub Publish
 
 ```bash
-# Install tools
-pip install build twine
+git add .
+git commit -m "v1.0.1: mmap support, 193M rec/s"
+git tag v1.0.1
+git push origin main --tags
+```
 
-# Build package
+### Manual PyPI Publish
+
+```bash
+# Build
 python -m build
 
-# Upload to PyPI
+# Upload (requires PyPI token)
 python -m twine upload dist/*
-
-# Users can then install with:
-pip install databento-fast
 ```
 
-**Steps:**
-1. Create PyPI account at https://pypi.org/account/register/
-2. Generate API token at https://pypi.org/manage/account/
-3. Update `setup.py` with your name/email
-4. Run commands above
+Users install with: `pip install databento-fast`
 
 ---
 

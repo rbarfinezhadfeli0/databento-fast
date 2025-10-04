@@ -185,7 +185,7 @@ PYBIND11_MODULE(databento_cpp, m) {
   // Version info
   // ============================================================================
   
-  m.attr("__version__") = "1.0.0";
+  m.attr("__version__") = "1.0.1";
   m.attr("__author__") = "databento-fast contributors";
-  m.attr("__description__") = "Ultra-fast alternative DBN parser (200M+ rec/s)";
+  m.attr("__description__") = "Ultra-fast DBN parser (193M+ rec/s) with mmap support";
 }

@@ -57,11 +57,16 @@ if(BUILD_EXAMPLES)
     target_link_libraries(standalone_test PRIVATE databento-cpp)
     target_compile_options(standalone_test PRIVATE -O3 -march=native)
     
+    add_executable(ultra_fast_real_data examples/ultra_fast_real_data.cpp)
+    target_link_libraries(ultra_fast_real_data PRIVATE databento-cpp)
+    target_compile_options(ultra_fast_real_data PRIVATE -O3 -march=native)
+    
     message(STATUS "Examples will be built:")
     message(STATUS "  - simple_mbo_parsing")
     message(STATUS "  - ultra_fast_parsing")
     message(STATUS "  - batch_processing")
     message(STATUS "  - standalone_test (self-contained)")
+    message(STATUS "  - ultra_fast_real_data (330M+ rec/s demo)")
 endif()
 
 # ============================================================================

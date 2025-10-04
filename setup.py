@@ -17,7 +17,7 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 import sys
 import os
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # Get the directory of this file
 here = os.path.abspath(os.path.dirname(__file__))
@@ -41,7 +41,7 @@ setup(
     version=__version__,
     author="databento-fast contributors",
     author_email="",
-    description="Ultra-fast Databento DBN parser (200M+ records/sec) with C++ and Python",
+    description="Ultra-fast Databento DBN parser (193M+ records/sec) with C++ and Python - includes mmap support",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/rbarfinezhadfeli0/databento-fast",
